@@ -183,27 +183,37 @@ static inline u32 __pure crc32_le_generic(u32 crc, unsigned char const *p,
 }
 
 #if CRC_LE_BITS == 1
-u32 __pure crc32_le(u32 crc, unsigned char const *p, size_t len)
+u32 __pure crc32_le_base(u32 crc, unsigned char const *p, size_t len)
 {
 	return crc32_le_generic(crc, p, len, NULL, CRC32_POLY_LE);
 }
-u32 __pure __crc32c_le(u32 crc, unsigned char const *p, size_t len)
+u32 __pure __crc32c_le_base(u32 crc, unsigned char const *p, size_t len)
 {
 	return crc32_le_generic(crc, p, len, NULL, CRC32C_POLY_LE);
 }
 #else
-u32 __pure crc32_le(u32 crc, unsigned char const *p, size_t len)
+u32 __pure crc32_le_base(u32 crc, unsigned char const *p, size_t len)
 {
 	return crc32_le_generic(crc, p, len,
 			(const u32 (*)[256])crc32table_le, CRC32_POLY_LE);
 }
-u32 __pure __crc32c_le(u32 crc, unsigned char const *p, size_t len)
+u32 __pure __crc32c_le_base(u32 crc, unsigned char const *p, size_t len)
 {
 	return crc32_le_generic(crc, p, len,
 			(const u32 (*)[256])crc32ctable_le, CRC32C_POLY_LE);
 }
 #endif
+
+u32 __pure __weak crc32_le(u32 crc, unsigned char const *p, size_t len)
+{
+	return crc32_le_base(crc, p, len);
+}
 EXPORT_SYMBOL(crc32_le);
+
+u32 __pure __weak __crc32c_le(u32 crc, unsigned char const *p, size_t len)
+{
+	return __crc32c_le_base(crc, p, len);
+}
 EXPORT_SYMBOL(__crc32c_le);
 
 /*
