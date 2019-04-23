@@ -15,7 +15,7 @@ int __percpu_init_rwsem(struct percpu_rw_semaphore *sem,
 	if (unlikely(!sem->read_count))
 		return -ENOMEM;
 
-	rcu_sync_init(&sem->rss, RCU_SCHED_SYNC);
+	rcu_sync_init(&sem->rss);
 	rcuwait_init(&sem->writer);
 	init_waitqueue_head(&sem->waiters);
 	atomic_set(&sem->block, 0);

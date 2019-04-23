@@ -29,7 +29,7 @@ struct percpu_rw_semaphore {
 #define __DEFINE_PERCPU_RWSEM(name, is_static)				\
 static DEFINE_PER_CPU(unsigned int, __percpu_rwsem_rc_##name);		\
 is_static struct percpu_rw_semaphore name = {				\
-	.rss = __RCU_SYNC_INITIALIZER(name.rss, RCU_SCHED_SYNC),	\
+	.rss = __RCU_SYNC_INITIALIZER(name.rss),			\
 	.read_count = &__percpu_rwsem_rc_##name,			\
 	.writer = __RCUWAIT_INITIALIZER(name.writer),			\
 	.waiters = __WAIT_QUEUE_HEAD_INITIALIZER(name.waiters),		\
