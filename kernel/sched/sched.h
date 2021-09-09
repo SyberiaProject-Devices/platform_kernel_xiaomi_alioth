@@ -1873,7 +1873,6 @@ extern void trigger_load_balance(struct rq *rq);
 
 extern void set_cpus_allowed_common(struct task_struct *p, const struct cpumask *new_mask);
 
-bool __cpu_overutilized(int cpu, int delta);
 bool cpu_overutilized(int cpu);
 
 #endif
@@ -2152,7 +2151,8 @@ extern unsigned int capacity_margin_freq;
 static inline unsigned long
 add_capacity_margin(unsigned long cpu_capacity, int cpu)
 {
-	cpu_capacity  = cpu_capacity * capacity_margin_freq * 100;
+	cpu_capacity  = cpu_capacity * 1280 *
+			(100 + per_cpu(sched_load_boost, cpu));
 	cpu_capacity /= 100;
 	cpu_capacity /= SCHED_CAPACITY_SCALE;
 	return cpu_capacity;
@@ -2720,4 +2720,7 @@ static inline bool is_min_capacity_cpu(int cpu)
 static inline bool is_min_capacity_cpu(int cpu) { return true; }
 #endif
 
-static inline int same_cluster(int src_cpu, int dst_cpu) { return 1; }
+static inline int same_cluster(int src_cpu, int dst_cpu)
+{
+	return capacity_orig_of(src_cpu) == capacity_orig_of(dst_cpu);
+}

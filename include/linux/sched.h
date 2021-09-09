@@ -585,6 +585,7 @@ static inline void sched_update_cpu_freq_min_max(const cpumask_t *cpus,
 					u32 fmin, u32 fmax) { }
 
 static inline void sched_set_refresh_rate(enum fps fps) { }
+DECLARE_PER_CPU_READ_MOSTLY(int, sched_load_boost);
 
 struct sched_rt_entity {
 	struct list_head		run_list;

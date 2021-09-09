@@ -1860,14 +1860,8 @@ static int rt_energy_aware_wake_cpu(struct task_struct *task)
 	unsigned long util, best_cpu_util = ULONG_MAX;
 	unsigned long best_cpu_util_cum = ULONG_MAX;
 	unsigned long util_cum;
-	unsigned long tutil = task_util(task);
 	int best_cpu_idle_idx = INT_MAX;
 	int cpu_idle_idx = -1;
-#ifdef CONFIG_SCHED_TUNE
-	bool prefer_high_cap = schedtune_prefer_idle(task);
-#else
-	bool prefer_high_cap = uclamp_boosted(task);
-#endif
 
 	rcu_read_lock();
 
@@ -1879,26 +1873,20 @@ static int rt_energy_aware_wake_cpu(struct task_struct *task)
 	if (!sd)
 		goto unlock;
 
-retry:
 	sg = sd->groups;
 	do {
 		int fcpu = group_first_cpu(sg);
-		int capacity_orig = capacity_orig_of(fcpu);
+		unsigned long capacity_orig = capacity_orig_of(fcpu);
 
-		if (prefer_high_cap) {
-			if (is_min_capacity_cpu(fcpu))
-				continue;
-		} else {
-			if (capacity_orig > best_capacity)
-				continue;
-		}
+		if (capacity_orig > best_capacity)
+			continue;
 
 		for_each_cpu_and(cpu, lowest_mask, sched_group_span(sg)) {
 
 			if (cpu_isolated(cpu))
 				continue;
 
-			if (__cpu_overutilized(cpu, tutil))
+			if (cpu_overutilized(cpu))
 				continue;
 
 			util = cpu_util(cpu);
@@ -1942,11 +1930,6 @@ retry:
 		}
 
 	} while (sg = sg->next, sg != sd->groups);
-
-	if (unlikely(prefer_high_cap) && best_cpu == -1) {
-		prefer_high_cap = false;
-		goto retry;
-	}
 
 unlock:
 	rcu_read_unlock();
