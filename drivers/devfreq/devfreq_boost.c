@@ -11,7 +11,6 @@
 #include <linux/kthread.h>
 #include <linux/slab.h>
 #include <uapi/linux/sched/types.h>
-#include <drm/drm_panel.h>
 
 enum {
 	SCREEN_OFF,
@@ -320,15 +319,11 @@ static int __init devfreq_boost_init(void)
 
 	d->msm_drm_notif.notifier_call = msm_drm_notifier_cb;
 	d->msm_drm_notif.priority = INT_MAX;
-	if (lcd_active_panel) {
-		ret = drm_panel_notifier_register(lcd_active_panel, &d->msm_drm_notif);
+		ret = msm_drm_register_client(&d->msm_drm_notif);
 		if (ret) {
 			pr_err("Unable to register fb_notifier: %d\n", ret);
 			goto unregister_handler;
 		}
-	} else {
-		pr_err("lcd_active_panel is null\n");
-	}
 
 	return 0;
 
