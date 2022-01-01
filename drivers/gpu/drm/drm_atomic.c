@@ -2603,7 +2603,6 @@ static int __drm_mode_atomic_ioctl(struct drm_device *dev, void *data,
 	/* Boost CPU and DDR when committing a new frame if sched_boost > 0 */
 	if (!(arg->flags & DRM_MODE_ATOMIC_TEST_ONLY)) {
 		devfreq_boost_kick(DEVFREQ_MSM_LLCCBW_DDR);
-		devfreq_boost_kick(DEVFREQ_MSM_LLCCBW);
 	}
 
 	drm_modeset_acquire_init(&ctx, DRM_MODESET_ACQUIRE_INTERRUPTIBLE);
