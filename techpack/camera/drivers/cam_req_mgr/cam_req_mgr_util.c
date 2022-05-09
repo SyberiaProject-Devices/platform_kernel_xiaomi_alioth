@@ -18,7 +18,7 @@
 static struct cam_req_mgr_util_hdl_tbl *hdl_tbl;
 static DEFINE_SPINLOCK(hdl_tbl_lock);
 
-static int hdl_count = 0;
+static hdl_count = 0;
 int cam_req_mgr_util_init(void)
 {
 	int rc = 0;
@@ -53,8 +53,7 @@ int cam_req_mgr_util_init(void)
 		goto bitmap_alloc_fail;
 	}
 	hdl_tbl->bits = bitmap_size * BITS_PER_BYTE;
-
-	hdl_count = 0;
+        hdl_count = 0;
 	return rc;
 
 bitmap_alloc_fail:
@@ -123,7 +122,6 @@ static int32_t cam_get_free_handle_index(void)
 	}
 
 	set_bit(idx, hdl_tbl->bitmap);
-
 	hdl_count++;
 	return idx;
 }
